@@ -1,0 +1,15 @@
+*~
+
+target/
+/target
+*/target
+*/**/target
+
+#IDEA
+*.iml
+*.ipr
+*.iws
+*.class
+*.jar
+.idea
+out
