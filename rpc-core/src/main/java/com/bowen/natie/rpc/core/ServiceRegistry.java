@@ -53,7 +53,7 @@ public class ServiceRegistry {
         try{
             byte[] bytes = data.getBytes();
             String path = zk.create(Constant.ZK_DATA_PATH,bytes,
-                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
             LOGGER.info("create zookeeper node {} => {}", path, data);
         }catch (KeeperException | InterruptedException e){
             LOGGER.error("create zk node fail", e);
