@@ -44,8 +44,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
 
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        //获取所有带有RpcService注解的SpringBean
-        System.out.println("=================get @RpcService Bean=========");
+       //get bean map
         Map<String ,Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         if(MapUtils.isNotEmpty(serviceBeanMap)){
             for(Object serviceBean:serviceBeanMap.values()){
@@ -67,9 +66,9 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel channel) throws Exception {
-                            channel.pipeline().addLast(new RpcDecoder(RpcRequest.class))  //反序列化，处理请求
-                                    .addLast(new RpcEncoder(RpcResponse.class))   //序列化,发送响应
-                                    .addLast(new RpcHandler(handlerMap)); //处理rpc请求
+                            channel.pipeline().addLast(new RpcDecoder(RpcRequest.class))  //decode incoming request
+                                    .addLast(new RpcEncoder(RpcResponse.class))  //encode sending response
+                                    .addLast(new RpcHandler(handlerMap)); //using RpcHandler for processing
                         }
                     }).option(ChannelOption.SO_BACKLOG,128).childOption(ChannelOption.SO_KEEPALIVE,true);
             String[] array = serverAddress.split(":");
@@ -80,7 +79,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
             LOGGER.info("server started on port {}", port);
 
             if(serviceRegistry != null){
-                serviceRegistry.registry(serverAddress);  // 注册服务地址
+                serviceRegistry.registry(serverAddress);
             }else {
                 throw new IllegalStateException("no zk found.");
             }

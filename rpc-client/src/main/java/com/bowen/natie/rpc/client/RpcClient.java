@@ -55,9 +55,9 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse>{
             bootstrap.group(group).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel channel) throws Exception {
-                    channel.pipeline().addLast(new RpcEncoder(RpcRequest.class))  //序列化，发送请求
-                            .addLast(new RpcDecoder(RpcResponse.class))   //反序列化，处理请求
-                            .addLast(RpcClient.this); // 使用 RpcClient 发送 RPC 请求
+                    channel.pipeline().addLast(new RpcEncoder(RpcRequest.class)) //encode sending request
+                            .addLast(new RpcDecoder(RpcResponse.class)) // decode received response
+                            .addLast(RpcClient.this); // using RpcClient to process
                 }
             }).option(ChannelOption.SO_KEEPALIVE, true);
 
