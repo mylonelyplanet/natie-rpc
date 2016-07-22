@@ -22,4 +22,12 @@ public class EnvRequest {
     public void setSign(String sign) {
         this.sign = sign;
     }
+
+    @Override
+    public String toString() {
+        return "EnvRequest{" +
+                "host='" + host + '\'' +
+                ", sign='" + sign + '\'' +
+                '}';
+    }
 }
