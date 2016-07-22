@@ -1,5 +1,6 @@
 package com.bowen.natie.rpc.client;
 
+import com.bowen.natie.rpc.common.EnvRequest;
 import net.sf.cglib.proxy.InvocationHandler;
 import net.sf.cglib.proxy.Proxy;
 import org.springframework.context.annotation.Configuration;
@@ -23,12 +24,6 @@ public class RpcProxy {
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object o, Method method, Object[] args) throws Throwable {
-                        RpcRequest request = new RpcRequest();
-                        request.setRequestId(UUID.randomUUID().toString());
-                        request.setClassName(method.getDeclaringClass().getName());
-                        request.setMethodName(method.getName());
-                        request.setParameterTypes(method.getParameterTypes());
-                        request.setParameters(args);
 
                         if(serviceDiscovery != null){
                             serverAddress = serviceDiscovery.discover(); // 发现服务
@@ -39,7 +34,24 @@ public class RpcProxy {
                         String host = array[0];
                         int port = Integer.parseInt(array[1]);
 
-                        System.out.println("invoke method to host: " + host + " | port: " + port);
+
+
+                        RpcRequest request = new RpcRequest();
+                        EnvRequest env = new EnvRequest();
+                        env.setHost(host);
+                        env.setSign(UUID.randomUUID().toString());
+                        for(Object obj: args){
+                            if(obj instanceof EnvRequest){
+                                obj = env;
+                            }
+                        }
+                        request.setRequestId(env.getSign());
+                        request.setClassName(method.getDeclaringClass().getName());
+                        request.setMethodName(method.getName());
+                        request.setParameterTypes(method.getParameterTypes());
+                        request.setParameters(args);
+
+                        System.out.println("invoke method to host: " + host + " | port: " + port +" | " + request.toString());
 
                         RpcClient client = new RpcClient(host,port);
                         RpcResponse response = client.send(request);
@@ -52,4 +64,5 @@ public class RpcProxy {
                     }
                 });
     }
+
 }
