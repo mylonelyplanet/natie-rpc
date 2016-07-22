@@ -40,11 +40,14 @@ public class RpcProxy {
                         EnvRequest env = new EnvRequest();
                         env.setHost(host);
                         env.setSign(UUID.randomUUID().toString());
-                        for(Object obj: args){
-                            if(obj instanceof EnvRequest){
-                                obj = env;
+                        if(args.length > 0){
+                            for(int i =0; i<args.length;i++){
+                                if(args[i] instanceof EnvRequest){
+                                    args[i] = env;
+                                }
                             }
                         }
+
                         request.setRequestId(env.getSign());
                         request.setClassName(method.getDeclaringClass().getName());
                         request.setMethodName(method.getName());
