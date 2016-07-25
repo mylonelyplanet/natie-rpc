@@ -1,7 +1,7 @@
 package com.bowen.natie.rpc.core;
 
-import com.bowen.natie.rpc.client.RpcRequest;
-import com.bowen.natie.rpc.client.RpcResponse;
+import com.bowen.natie.rpc.basic.dto.RpcRequest;
+import com.bowen.natie.rpc.basic.dto.RpcResponse;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

@@ -1,6 +1,6 @@
 package com.bowen.natie.rpc.core;
 
-import com.bowen.natie.rpc.common.Constant;
+import com.bowen.natie.rpc.basic.constant.Constant;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

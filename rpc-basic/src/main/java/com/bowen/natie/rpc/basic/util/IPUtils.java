@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.basic.registry.util;
+package com.bowen.natie.rpc.basic.util;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -32,7 +32,7 @@ public class IPUtils {
     private static String localHostAddressPrefix = "127.0.";
 
     private static ConcurrentMap<Integer, String> integer2IPV4Map = PlatformDependent.newConcurrentHashMap();
-    private static ConcurrentMap<String, Integer> IPV42IntegerMap = PlatformDependent.newConcurrentHashMap();
+    private static ConcurrentMap<String, Integer> IPV42IntegerMap = com.bowen.natie.rpc.basic.util.PlatformDependent.newConcurrentHashMap();
     private static ConcurrentMap<String, InetAddress> inetAddressCache = PlatformDependent.newConcurrentHashMap();
     static {
         try {

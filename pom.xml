@@ -9,8 +9,7 @@
     <packaging>pom</packaging>
     <version>${natie.version}</version>
     <modules>
-        <module>rpc-common</module>
-        <module>rpc-client</module>
+        <module>rpc-proxy</module>
         <module>rpc-core</module>
         <module>rpc-basic</module>
         <module>rpc-cfg</module>

@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.basic.registry.util;
+package com.bowen.natie.rpc.basic.util;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.slf4j.Logger;

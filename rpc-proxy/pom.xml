@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rpc-core</artifactId>
+    <artifactId>rpc-proxy</artifactId>
 
     <dependencies>
         <dependency>
@@ -27,6 +27,16 @@
             <artifactId>netty-all</artifactId>
         </dependency>
 
+        <!-- Protostuff -->
+        <dependency>
+            <groupId>com.dyuproject.protostuff</groupId>
+            <artifactId>protostuff-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dyuproject.protostuff</groupId>
+            <artifactId>protostuff-runtime</artifactId>
+        </dependency>
+
         <!-- ZooKeeper -->
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
@@ -39,9 +49,10 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
 
+        <!-- Objenesis -->
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
         </dependency>
 
         <!-- CGLib -->

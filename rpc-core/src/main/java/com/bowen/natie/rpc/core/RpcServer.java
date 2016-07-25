@@ -1,9 +1,9 @@
 package com.bowen.natie.rpc.core;
 
-import com.bowen.natie.rpc.client.RpcRequest;
-import com.bowen.natie.rpc.client.RpcResponse;
-import com.bowen.natie.rpc.common.RpcDecoder;
-import com.bowen.natie.rpc.common.RpcEncoder;
+import com.bowen.natie.rpc.basic.dto.RpcRequest;
+import com.bowen.natie.rpc.basic.dto.RpcResponse;
+import com.bowen.natie.rpc.basic.protocol.RpcDecoder;
+import com.bowen.natie.rpc.basic.protocol.RpcEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
