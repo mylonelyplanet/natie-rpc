@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.common;
+package com.bowen.natie.rpc.common.protocol.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

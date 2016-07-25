@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.common;
+package com.bowen.natie.rpc.common.protocol.dto;
 
 /**
  * Created by bowen.jin on 2016-7-22.

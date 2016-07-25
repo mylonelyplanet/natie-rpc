@@ -16,7 +16,7 @@ public class ServiceRegistry {
 
     private CountDownLatch latch = new CountDownLatch(1);
 
-    private String registryAddress;
+    private static String registryAddress = "127.0.0.1:2181";
 
     public ServiceRegistry(String registryAddress){ this.registryAddress = registryAddress;}
 

@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.client;
+package com.bowen.natie.rpc.common.protocol.dto;
 
 import java.util.Arrays;
 

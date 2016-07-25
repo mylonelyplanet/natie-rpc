@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.common;
+package com.bowen.natie.rpc.common.constant;
 
 /**
  * Created by mylonelyplanet on 16/7/9.

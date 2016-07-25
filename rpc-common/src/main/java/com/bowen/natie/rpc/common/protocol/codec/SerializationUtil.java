@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.common;
+package com.bowen.natie.rpc.common.protocol.codec;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;

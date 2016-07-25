@@ -30,15 +30,21 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
 
-    private String serverAddress;
+    private String serverHost;
+    private String serverPort;
     private ServiceRegistry serviceRegistry;
 
     private Map<String, Object> handlerMap = new HashMap<>();
 
-    public RpcServer(String serverAddress) {this.serverAddress = serverAddress;}
+//    public RpcServer(String serverHost, String serverPort) {
+//        this.serverHost = serverHost;
+//        this.serverPort = serverPort;
+//    }
 
-    public RpcServer(String serverAddress, ServiceRegistry serviceRegistry){
-        this.serverAddress = serverAddress;
+    public RpcServer(String serverHost, String serverPort, ServiceRegistry serviceRegistry){
+
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
         this.serviceRegistry = serviceRegistry;
     }
 
@@ -71,12 +77,13 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
                                     .addLast(new RpcHandler(handlerMap)); //using RpcHandler for processing
                         }
                     }).option(ChannelOption.SO_BACKLOG,128).childOption(ChannelOption.SO_KEEPALIVE,true);
-            String[] array = serverAddress.split(":");
-            String host = array[0];
-            int port = Integer.parseInt(array[1]);
 
-            ChannelFuture future = bootstrap.bind(host,port).sync();
-            LOGGER.info("server started on port {}", port);
+            StringBuilder sb = new StringBuilder();
+            String serverAddress = sb.append(serverHost).append(":").append(serverPort).toString();
+            int port = Integer.parseInt(serverPort);
+
+            ChannelFuture future = bootstrap.bind(serverHost,port).sync();
+            LOGGER.info("server started on port {}", serverPort);
 
             if(serviceRegistry != null){
                 serviceRegistry.registry(serverAddress);

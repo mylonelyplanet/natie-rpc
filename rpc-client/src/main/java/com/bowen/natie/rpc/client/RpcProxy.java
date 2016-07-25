@@ -3,7 +3,6 @@ package com.bowen.natie.rpc.client;
 import com.bowen.natie.rpc.common.EnvRequest;
 import net.sf.cglib.proxy.InvocationHandler;
 import net.sf.cglib.proxy.Proxy;
-import org.springframework.context.annotation.Configuration;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -15,7 +14,9 @@ public class RpcProxy {
     private String serverAddress;
     private ServiceDiscovery serviceDiscovery;
 
-    public RpcProxy(String serverAddress){ this.serverAddress = serverAddress;}
+    public RpcProxy(String serverAddress){
+        this.serverAddress = serverAddress;
+    }
     public RpcProxy(ServiceDiscovery serviceDiscovery){ this.serviceDiscovery = serviceDiscovery;}
 
     @SuppressWarnings("unchecked")
@@ -35,7 +36,7 @@ public class RpcProxy {
                         int port = Integer.parseInt(array[1]);
 
 
-
+                        /*get environment info*/
                         RpcRequest request = new RpcRequest();
                         EnvRequest env = new EnvRequest();
                         env.setHost(host);
