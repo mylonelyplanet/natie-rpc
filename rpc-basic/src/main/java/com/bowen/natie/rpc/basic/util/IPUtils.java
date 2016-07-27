@@ -155,15 +155,13 @@ public class IPUtils {
         try {
             ipAddr = hostName != null ? getAddresses(hostName) : IPUtils.localIp();
         } catch (Exception e) {
-            logger.warn("hostName format is worng：" + hostName, e);
+            logger.warn("hostName format is worng: " + hostName, e);
             ipAddr = IPUtils.localIp();
         }
         return ipAddr;
     }
 
-    /**
-     * 从SocketAddress中获取ip:port字符串
-     */
+
     public static String getHostAddress(SocketAddress socketAddress) {
         InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
         return inetSocketAddress.getAddress().getHostAddress() + ':' + inetSocketAddress.getPort();
@@ -217,13 +215,13 @@ public class IPUtils {
             hostAndPort.hostAddress = hostString;
         }
 
-        // 去除旧版InetSocketAddress.toString()产生的/
+
         index = hostAndPort.hostAddress.indexOf('/');
         if (index != -1) {
             hostAndPort.hostAddress = hostAndPort.hostAddress.substring(index + 1, hostAndPort.hostAddress.length());
         }
 
-        // 将127.0.0.1 替换为机器IP地址(for local proxy)
+        //replace 127.0.0.1 to machine local address
         if (LOCALHOST.equals(hostAndPort.hostAddress)) {
             hostAndPort.hostAddress = IPUtils.localIp4Str();
         }

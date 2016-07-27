@@ -9,7 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rpc-cfg</artifactId>
-
+    <artifactId>rpc-example</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>web</module>
+        <module>api</module>
+        <module>service</module>
+    </modules>
 
 </project>

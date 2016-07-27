@@ -9,7 +9,7 @@ public class RpcException extends Exception{
 
     private static final long serialVersionUID = 1L;
 
-    // 尽量使用RpcErrorCode, 不使用本类定义的常量
+
     public static final String CALLEE_UNKNOWN_EXCEPTION = "RPC_CALLEE_UNKNOWN_EXCEPTION";
     public static final String GENERAL_EXCEPTION = "GENERAL_EXCEPTION";
 
@@ -162,7 +162,6 @@ public class RpcException extends Exception{
         }
     }
 
-    // IT测试提交前，修改getMessage，及Exception场景的String预期值
     @Override
     public String getMessage() {
         return new StringBuilder(100).append("[errorGroup:").append(errorGroup).append("],[circuitBroken:")
@@ -214,9 +213,6 @@ public class RpcException extends Exception{
         return circuitBroken;
     }
 
-    /**
-     * 设置Proxy端是否需要进行熔断处理.
-     */
     public void setCircuitBroken(boolean circuitBroken) {
         this.circuitBroken = circuitBroken;
     }
@@ -225,9 +221,6 @@ public class RpcException extends Exception{
         return retry;
     }
 
-    /**
-     * 设置Proxy端是否需要重试.
-     */
     public void setRetry(boolean retry) {
         this.retry = retry;
     }

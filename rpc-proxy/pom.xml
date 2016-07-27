@@ -5,7 +5,7 @@
     <parent>
         <artifactId>natie-rpc</artifactId>
         <groupId>com.bowen.natie</groupId>
-        <version>${natie.version}</version>
+        <version>0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.bowen.natie</groupId>
             <artifactId>rpc-basic</artifactId>
-            <version>${natie.version}</version>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

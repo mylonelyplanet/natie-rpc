@@ -36,10 +36,6 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
 
     private Map<String, Object> handlerMap = new HashMap<>();
 
-//    public RpcServer(String serverHost, String serverPort) {
-//        this.serverHost = serverHost;
-//        this.serverPort = serverPort;
-//    }
 
     public RpcServer(String serverHost, String serverPort, ServiceRegistry serviceRegistry){
 

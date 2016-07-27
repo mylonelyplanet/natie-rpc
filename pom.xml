@@ -7,17 +7,17 @@
     <groupId>com.bowen.natie</groupId>
     <artifactId>natie-rpc</artifactId>
     <packaging>pom</packaging>
-    <version>${natie.version}</version>
+    <version>0.1</version>
     <modules>
         <module>rpc-proxy</module>
         <module>rpc-core</module>
         <module>rpc-basic</module>
-        <module>rpc-cfg</module>
+        <module>rpc-example</module>
     </modules>
 
 
     <properties>
-        <natie.version>0.1</natie.version>
+
         <java.version>1.8</java.version>
         <spring.boot.version>1.3.6.RELEASE</spring.boot.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -112,4 +112,25 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
 </project>
