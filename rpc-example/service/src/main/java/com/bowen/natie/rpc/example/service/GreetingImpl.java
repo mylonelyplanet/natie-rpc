@@ -10,8 +10,10 @@ import com.bowen.natie.rpc.example.api.Greeting;
 
 @RpcService(Greeting.class)
 public class GreetingImpl implements Greeting {
+
     @Override
     public String hello(String name, EnvRequest env) {
+
         StringBuilder sb = new StringBuilder();
         return sb.append("hello").append(name).append(env.getHost()).toString();
     }

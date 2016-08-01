@@ -47,11 +47,12 @@ public class RpcServer implements ApplicationContextAware, InitializingBean{
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
        //get bean map
+
         Map<String ,Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         if(MapUtils.isNotEmpty(serviceBeanMap)){
             for(Object serviceBean:serviceBeanMap.values()){
                 String interfaceName = serviceBean.getClass().getAnnotation(RpcService.class).value().getName();
-                System.out.println("BEAN: "+ interfaceName);
+
                 handlerMap.put(interfaceName,serviceBean);
             }
         }

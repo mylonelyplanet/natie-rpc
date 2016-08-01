@@ -34,12 +34,13 @@ public class RpcHandler extends SimpleChannelInboundHandler<RpcRequest>{
         }catch (Throwable t){
             response.setError(t);
         }
+        LOGGER.info(response.toString());
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     private Object handle(RpcRequest request) throws Throwable {
 
-        LOGGER.info("RpcServer is handling: {}", request);
+//        LOGGER.info("RpcServer is handling: {}", request);
 
         String className = request.getClassName();
         Object serviceBean = handlerMap.get(className);

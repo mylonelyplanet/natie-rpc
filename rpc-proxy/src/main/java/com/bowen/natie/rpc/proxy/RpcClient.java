@@ -36,7 +36,6 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse>{
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, RpcResponse rpcResponse) throws Exception {
-        LOGGER.info("proxy read response: {}", rpcResponse);
         this.response = rpcResponse;
         synchronized (obj){
             obj.notifyAll(); //收到响应,唤醒线程.
@@ -65,14 +64,13 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse>{
 
             ChannelFuture future = bootstrap.connect(host,port).sync();
             future.channel().writeAndFlush(request).sync();
-            LOGGER.info("proxy waiting..... ");
+
             synchronized (obj){
                 obj.wait();
             }
             if(this.response != null ){
                 future.channel().closeFuture().sync();
             }
-            LOGGER.info("proxy receive response: {}", this.response);
             return this.response;
         }finally {
             group.shutdownGracefully();
