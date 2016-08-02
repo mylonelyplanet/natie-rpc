@@ -13,13 +13,14 @@ import java.util.List;
 @SpringBootApplication
 public class Application {
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         List<Object> apps = new ArrayList();
         apps.add(StartContainer.class);
         apps.add(Application.class);
 
         SpringApplication start = new SpringApplication(apps.toArray());
-        //start.setWebEnvironment(false);
+        start.setWebEnvironment(false);
         start.run(args);
     }
 }

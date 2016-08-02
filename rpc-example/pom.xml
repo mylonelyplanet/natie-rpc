@@ -15,6 +15,7 @@
         <module>web</module>
         <module>api</module>
         <module>service</module>
+        <module>example-noweb</module>
     </modules>
 
 </project>
