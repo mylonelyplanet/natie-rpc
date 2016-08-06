@@ -13,9 +13,10 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 public class StartContainer {
 
-    @Value("${registry.address}")
+    @Value("${registry.address:127.0.0.1:2181}")
     private String registryAddress;
 
+    //// TODO: 16/8/6
     @Value("${service.host:127.0.0.1}")
     private String serviceHost;
 
