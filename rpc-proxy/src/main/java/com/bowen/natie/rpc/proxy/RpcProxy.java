@@ -57,11 +57,11 @@ public class RpcProxy {
                         request.setParameterTypes(method.getParameterTypes());
                         request.setParameters(args);
 
-                        System.out.println("invoke method to host: " + host + " | port: " + port +" | " + request.toString());
+                        //System.out.println("invoke method to host: " + host + " | port: " + port +" | " + request.toString());
 
                         RpcClient client = new RpcClient(host,port);
                         RpcResponse response = client.send(request);
-                        System.out.println("invoke finish: " + response);
+                        //System.out.println("invoke finish: " + response);
                         if(response.isError()){
                             throw response.getError();
                         }else {

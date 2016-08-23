@@ -16,6 +16,7 @@
         <module>api</module>
         <module>service</module>
         <module>example-noweb</module>
+        <module>perf-test</module>
     </modules>
 
 </project>
