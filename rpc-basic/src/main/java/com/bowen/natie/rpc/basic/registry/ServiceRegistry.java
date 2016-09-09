@@ -5,5 +5,8 @@ package com.bowen.natie.rpc.basic.registry;
  */
 public interface ServiceRegistry {
 
-//TODO
+    public void registService(int port, boolean isSSL);
+
+    public void shutdown() throws Exception;
+
 }
