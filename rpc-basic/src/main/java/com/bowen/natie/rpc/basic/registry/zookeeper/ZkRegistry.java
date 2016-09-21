@@ -7,6 +7,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 
 /**
  * Created by mylonelyplanet on 16/9/20.
+ * using curator framework to implement service register
  */
 public class ZkRegistry {
 

@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.core;
+package com.bowen.natie.rpc.basic.registry.zookeeper;
 
 import com.bowen.natie.rpc.basic.constant.Constant;
 import org.apache.zookeeper.*;
@@ -10,6 +10,8 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by mylonelyplanet on 16/7/10.
+ * using zookeeper own client
+ * example, not used.
  */
 public class ServiceRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistry.class);

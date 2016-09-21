@@ -32,8 +32,6 @@ import java.util.Map;
 public class RpcServer implements ApplicationContextAware{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
-
-
     private Map<String, Object> handlerMap = new HashMap<>();
 
     public RpcServer(){
@@ -43,18 +41,12 @@ public class RpcServer implements ApplicationContextAware{
 
         //Detect the final port and log it.
         final int finalPort = checkPort(-1);
-
-        //service register
-        checkHostConfig(finalPort);
-        syncServiceInfo(finalPort, sslFlag);
-        startNetty(finalPort);
-
+        startNetty(finalPort, sslFlag);
     }
 
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
        //get bean map
-
         Map<String ,Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         if(MapUtils.isNotEmpty(serviceBeanMap)){
             for(Object serviceBean:serviceBeanMap.values()){
@@ -66,7 +58,7 @@ public class RpcServer implements ApplicationContextAware{
     }
 
 
-    public void startNetty(final int port) throws Exception {
+    public void startNetty(final int port, final boolean sslFlag) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -80,14 +72,19 @@ public class RpcServer implements ApplicationContextAware{
                                     .addLast(new RpcEncoder(RpcResponse.class))  //encode sending response
                                     .addLast(new RpcHandler(handlerMap)); //using RpcHandler for processing
                         }
-                    }).option(ChannelOption.SO_BACKLOG,128).childOption(ChannelOption.SO_KEEPALIVE,true);
-
+                    }).option(ChannelOption.SO_BACKLOG,128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture future = bootstrap.bind(port).sync();
             LOGGER.info("server started on port {}", port);
 
+            //service register
+            checkHostConfig(port);
+            syncServiceInfo(port, sslFlag);
 
-            future.channel().closeFuture().sync();
+            // Block to wait until the server socket is closed.
+            if(future != null){
+                future.channel().closeFuture().sync();
+            }
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
