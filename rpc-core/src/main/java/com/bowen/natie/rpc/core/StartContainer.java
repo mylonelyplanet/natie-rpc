@@ -1,5 +1,9 @@
 package com.bowen.natie.rpc.core;
 
+import com.bowen.natie.rpc.basic.registry.RegisterAgent;
+import com.bowen.natie.rpc.basic.util.IPUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,29 +17,38 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 public class StartContainer {
 
-    @Value("${registry.address:127.0.0.1:2181}")
-    private String registryAddress;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+//    @Value("${registry.address:127.0.0.1:2181}")
+//    private String registryAddress;
 
     //// TODO: 16/8/6
-    @Value("${service.host:127.0.0.1}")
-    private String serviceHost;
+//    @Value("${service.host:127.0.0.1}")
+//    private String serviceHost;
+//
+//    @Value("${service.port:7000}")
+//    private String servicePort;
 
-    @Value("${service.port:7000}")
-    private String servicePort;
 
-    @Bean(name="serviceRegistry")
-    public ServiceRegistry initRegistry(){
-
-        ServiceRegistry registry = new ServiceRegistry(registryAddress);
-        return registry;
-    }
 
     @Bean(name="rpcServer")
-    public RpcServer initServer(ServiceRegistry serviceRegistry){
+    public RpcServer initServer(){
 
-        RpcServer rpcServer = new RpcServer(serviceHost,servicePort,serviceRegistry);
+        try {
+            // 检测注册中心
+            RegisterAgent.getInstance();
+            // init the local address to avoid first time timeout
+            IPUtils.localIp4Str();
 
-        return rpcServer;
+            RpcServer rpcServer = new RpcServer();
+            rpcServer.startServer(false);
+
+            return rpcServer;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

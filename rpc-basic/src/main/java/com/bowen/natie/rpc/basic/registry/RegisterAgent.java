@@ -1,5 +1,6 @@
 package com.bowen.natie.rpc.basic.registry;
 
+import com.bowen.natie.rpc.basic.registry.zookeeper.ZkRegistry;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -14,17 +15,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by mylonelyplanet on 16/7/24.
  */
-public final class ZKAgent implements ServiceRegistry{
+public final class RegisterAgent  {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZKAgent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterAgent.class);
 
     public static String ZK_HOST_PORT = "127.0.0.1:2181";
 
-    private static volatile ZKAgent instance;
+    private static volatile RegisterAgent instance;
     private static AtomicBoolean shutdownFlag = new AtomicBoolean(false);
 
-    private int connectionTimeout = 10000;// 连接超时时间
-    private int sessionTimeout = 10000; // 会话超时时间
+    private int connectionTimeout = 10000;//
+    private int sessionTimeout = 10000; //
 
     private CuratorFramework curatorClient;
 
@@ -35,9 +36,9 @@ public final class ZKAgent implements ServiceRegistry{
         }
     }
 
-    private ZKAgent() throws Exception {
+    private RegisterAgent() throws Exception {
         try {
-            this.curatorClient = getCuratorClient();
+            this.curatorClient = ZkRegistry.getCuratorClient(ZK_HOST_PORT,sessionTimeout,connectionTimeout);
             curatorClient.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                 @Override
                 public void stateChanged(CuratorFramework curatorFramework, ConnectionState newState) {
@@ -56,24 +57,24 @@ public final class ZKAgent implements ServiceRegistry{
         }
     }
 
-    /*获取单例*/
-    public ZKAgent getInstance() throws Exception {
+    /*get singleton*/
+    public static RegisterAgent getInstance() throws Exception {
         if(instance == null){
-            synchronized (instance){
+            synchronized (RegisterAgent.class){
                 if(instance == null){
-                    instance = new ZKAgent();
+                    instance = new RegisterAgent();
                 }
             }
         }
         return instance;
     }
 
-    @Override
+
     public void registService(int port, boolean isSSL) {
 
     }
 
-    @Override
+
     public void shutdown() throws Exception {
 
     }
@@ -83,18 +84,8 @@ public final class ZKAgent implements ServiceRegistry{
     }
 
    private static void clearInstance(){
-       ZKAgent.instance = null;
+       RegisterAgent.instance = null;
    }
 
-    /*获取zk客户端*/
-    private CuratorFramework getCuratorClient() throws Exception {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
 
-        CuratorFramework theCuratorClient = CuratorFrameworkFactory.newClient(ZK_HOST_PORT,sessionTimeout,connectionTimeout,retryPolicy);
-        theCuratorClient.getZookeeperClient().blockUntilConnectedOrTimedOut();
-        if (!theCuratorClient.getZookeeperClient().isConnected()) {
-            throw new Exception("无法获取ZK连接");
-        }
-        return theCuratorClient;
-    }
 }
