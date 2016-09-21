@@ -1,6 +1,5 @@
-package com.bowen.natie.rpc.basic.registry;
+package com.bowen.natie.rpc.basic.registry.zookeeper;
 
-import com.bowen.natie.rpc.basic.registry.zookeeper.ZkRegistry;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -38,7 +37,7 @@ public final class RegisterAgent  {
 
     private RegisterAgent() throws Exception {
         try {
-            this.curatorClient = ZkRegistry.getCuratorClient(ZK_HOST_PORT,sessionTimeout,connectionTimeout);
+            this.curatorClient = getCuratorClient();
             curatorClient.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                 @Override
                 public void stateChanged(CuratorFramework curatorFramework, ConnectionState newState) {
@@ -83,9 +82,20 @@ public final class RegisterAgent  {
         return shutdownFlag.get();
     }
 
-   private static void clearInstance(){
+    private static void clearInstance(){
        RegisterAgent.instance = null;
    }
 
+    /*get registerClient*/
+    private CuratorFramework getCuratorClient() throws Exception {
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+
+        CuratorFramework theCuratorClient = CuratorFrameworkFactory.newClient(ZK_HOST_PORT,sessionTimeout,connectionTimeout,retryPolicy);
+        theCuratorClient.getZookeeperClient().blockUntilConnectedOrTimedOut();
+        if (!theCuratorClient.getZookeeperClient().isConnected()) {
+            throw new Exception("can't connect to zk!");
+        }
+        return theCuratorClient;
+    }
 
 }

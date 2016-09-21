@@ -4,7 +4,7 @@ import com.bowen.natie.rpc.basic.dto.RpcRequest;
 import com.bowen.natie.rpc.basic.dto.RpcResponse;
 import com.bowen.natie.rpc.basic.protocol.RpcDecoder;
 import com.bowen.natie.rpc.basic.protocol.RpcEncoder;
-import com.bowen.natie.rpc.basic.registry.RegisterAgent;
+import com.bowen.natie.rpc.basic.registry.zookeeper.RegisterAgent;
 import com.bowen.natie.rpc.basic.util.IPUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -18,7 +18,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 

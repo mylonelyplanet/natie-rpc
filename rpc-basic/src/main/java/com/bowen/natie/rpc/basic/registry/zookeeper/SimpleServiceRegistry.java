@@ -13,14 +13,14 @@ import java.util.concurrent.CountDownLatch;
  * using zookeeper own client
  * example, not used.
  */
-public class ServiceRegistry {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistry.class);
+public class SimpleServiceRegistry {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleServiceRegistry.class);
 
     private CountDownLatch latch = new CountDownLatch(1);
 
     private static String registryAddress = "127.0.0.1:2181";
 
-    public ServiceRegistry(String registryAddress){ this.registryAddress = registryAddress;}
+    public SimpleServiceRegistry(String registryAddress){ this.registryAddress = registryAddress;}
 
     public void registry(String data){
 

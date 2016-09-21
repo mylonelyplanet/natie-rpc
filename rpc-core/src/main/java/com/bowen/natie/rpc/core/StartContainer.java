@@ -1,15 +1,11 @@
 package com.bowen.natie.rpc.core;
 
-import com.bowen.natie.rpc.basic.registry.RegisterAgent;
+import com.bowen.natie.rpc.basic.registry.zookeeper.RegisterAgent;
 import com.bowen.natie.rpc.basic.util.IPUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Created by mylonelyplanet on 16/7/25.
