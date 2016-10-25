@@ -1,6 +1,8 @@
 package com.bowen.natie.rpc.basic.entity;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -22,10 +24,44 @@ public class ServerInfo<T> {
     private final T         payload;
     private final long      registrationTimeUTC;
 
+    public ServerInfo(String name, String id, String address,Integer port, T payload, long registrationTimeUTC){
+        this.name = Preconditions.checkNotNull(name,"name can't be null");
+        this.id = Preconditions.checkNotNull(id, "id can't be null");
+        this.address = address;
+        this.port = port;
+        this.payload = payload;
+        this.registrationTimeUTC = registrationTimeUTC;
+    }
+
+    //only for de-serialization
+    public ServerInfo(){this("", "", "", null, null,0 );}
 
 
+    @JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, defaultImpl=Object.class)
+    public T getPayload()
+    {
+        return payload;
+    }
 
+    public long getRegistrationTimeUTC() {
+        return registrationTimeUTC;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
 
     /**
      * based on http://pastebin.com/5X073pUc

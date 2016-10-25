@@ -42,11 +42,11 @@ public final class RegisterAgent  {
                 @Override
                 public void stateChanged(CuratorFramework curatorFramework, ConnectionState newState) {
                     if ((newState == ConnectionState.LOST) || (newState == ConnectionState.SUSPENDED)) {
-
+                        LOGGER.info("ZK connection lost.");
                     } else if (newState == ConnectionState.RECONNECTED) {
-
+                        LOGGER.info("ZK connection reconnected");
                     } else if (newState == ConnectionState.CONNECTED) {
-
+                        LOGGER.info("ZK connected");
                     }
                 }
             });
