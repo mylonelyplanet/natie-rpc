@@ -8,12 +8,14 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import com.bowen.natie.rpc.basic.exception.RpcErrorCode;
 import com.bowen.natie.rpc.basic.exception.RpcException;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,44 +31,24 @@ public class IPUtils {
 
     private static InetAddress localInetAddress;
     private static String localHostAddress = "127.0.0.1";
-    private static String localHostAddressPrefix = "127.0.";
 
-    private static ConcurrentMap<Integer, String> integer2IPV4Map = PlatformDependent.newConcurrentHashMap();
-    private static ConcurrentMap<String, Integer> IPV42IntegerMap = com.bowen.natie.rpc.basic.util.PlatformDependent.newConcurrentHashMap();
     private static ConcurrentMap<String, InetAddress> inetAddressCache = PlatformDependent.newConcurrentHashMap();
     static {
         try {
-            localInetAddress = InetAddress.getLocalHost();
 
-            if (localInetAddress.getHostAddress() == null || LOCALHOST.equals(localInetAddress.getHostAddress())) {
-                NetworkInterface ni = NetworkInterface.getByName("bond0");
-                if (ni == null) {
-                    ni = NetworkInterface.getByName("eth0");
-                }
-                if (ni == null) {
-                    throw new RpcException(RpcErrorCode.GENERAL_EXCEPTION,
-                            " fail to get ip address, could not read any info from local host,bond0 and eth0");
-                }
 
-                Enumeration<InetAddress> ips = ni.getInetAddresses();
-                while (ips.hasMoreElements()) {
-                    InetAddress nextElement = ips.nextElement();
-                    if (LOCALHOST.equals(nextElement.getHostAddress()) || nextElement instanceof Inet6Address
-                            || nextElement.getHostAddress().contains(":")) {
-                        continue;
-                    }
-                    localInetAddress = nextElement;
-                }
+            List<InetAddress> listAdr = getAllLocalIPs();
+            if(listAdr != null && listAdr.size() > 0){
+                localInetAddress = listAdr.get(0);
+            }else {
+                localInetAddress = InetAddress.getLocalHost();
             }
-
-            setHostAddress(localInetAddress.getHostAddress());
+            localHostAddress =localInetAddress.getHostAddress();
 
         } catch (UnknownHostException e) {
             logger.error("InetAddress.getLocalHost error.", e);
         } catch (SocketException e) {
             logger.error("InetAddress.getLocalHost error.", e);
-        } catch (RpcException e) {
-            logger.error("[init IpUtils error][please configure hostname or bond0 or eth0]", e);
         } catch (Throwable e) {
             logger.error("[init IpUtils error][please configure hostname or bond0 or eth0]", e);
         }
@@ -87,61 +69,14 @@ public class IPUtils {
         return result;
     }
 
-    private static void setHostAddress(String address) {
-        IPUtils.localHostAddress = address;
-        List<String> hostAddressIpDigitals = RpcStrings.split(address, '.', 4);
-        IPUtils.localHostAddressPrefix = hostAddressIpDigitals.get(0) + '.' + hostAddressIpDigitals.get(1) + '.';
-    }
 
-    public static String integer2IPV4(Integer iIPV4) {
-        if (iIPV4 == null || iIPV4 == 0) {
-            return null;
-        }
 
-        String result = integer2IPV4Map.get(iIPV4);
-        if (result != null) {
-            return result;
-        }
 
-        StringBuilder sb = PlatformDependent.stringBuilder();
-        sb.append(0xff & (iIPV4 >> 24)).append('.').append(0xff & (iIPV4 >> 16)).append('.').append(0xff & (iIPV4 >> 8))
-                .append('.').append(0xff & (iIPV4));
-        result = sb.toString();
-
-        integer2IPV4Map.put(iIPV4, result);
-        return result;
-    }
-
-    public static Integer IPV42Integer(String strIPV4) {
-        if (strIPV4 == null) {
-            return null;
-        }
-
-        Integer result = IPV42IntegerMap.get(strIPV4);
-        if (result != null) {
-            return result;
-        }
-        List<String> it = RpcStrings.split(strIPV4, '.', 4);
-        int tempInt;
-        byte[] byteAddress = new byte[4];
-        for (int i = 0; i < 4; i++) {
-            tempInt = Integer.parseInt(it.get(i));
-            byteAddress[i] = (byte) tempInt;
-        }
-
-        result = ((byteAddress[0] & 0xff) << 24) | ((byteAddress[1] & 0xff) << 16) | ((byteAddress[2] & 0xff) << 8)
-                | (byteAddress[3] & 0xff);
-        IPV42IntegerMap.put(strIPV4, result);
-        return result;
-    }
 
     public static String localIp4Str() {
         return localHostAddress;
     }
 
-    public static String localIp4Prefix() {
-        return localHostAddressPrefix;
-    }
 
     public static InetAddress localIp() {
         return localInetAddress;
@@ -266,4 +201,58 @@ public class IPUtils {
         }
     }
 
+    /**
+     * based on http://pastebin.com/5X073pUc
+     * <p>
+     *
+     * Returns all available IP addresses.
+     * <p>
+     * In error case or if no network connection is established, we return
+     * an empty list here.
+     * <p>
+     * Loopback addresses are excluded - so 127.0.0.1 will not be never
+     * returned.
+     * <p>
+     * The "primary" IP might not be the first one in the returned list.
+     *
+     * @return  Returns all IP addresses (can be an empty list in error case
+     *          or if network connection is missing).
+     * @since   0.1.0
+     * @throws SocketException errors
+     */
+    public static List<InetAddress> getAllLocalIPs() throws SocketException
+    {
+        List<InetAddress> listAdr = Lists.newArrayList();
+        Enumeration<NetworkInterface> nifs = NetworkInterface.getNetworkInterfaces();
+        if (nifs == null) return listAdr;
+
+        while (nifs.hasMoreElements())
+        {
+            NetworkInterface nif = nifs.nextElement();
+            //System.out.println(nif);
+            // We ignore subinterfaces - as not yet needed.
+            //System.out.println(" ");
+            Enumeration<InetAddress> adrs = nif.getInetAddresses();
+            while ( adrs.hasMoreElements() )
+            {
+                InetAddress adr = adrs.nextElement();
+                if ( localIpFilter(nif, adr) )
+                {
+                    listAdr.add(adr);
+                }
+            }
+        }
+        return listAdr;
+    }
+
+    public static boolean localIpFilter(NetworkInterface nif, InetAddress adr) throws SocketException
+    {
+        return (adr != null) && !adr.isLoopbackAddress() && (nif.isPointToPoint() || !adr.isLinkLocalAddress()) && !nif.getName().contains("net") && !nif.getDisplayName().contains("Virtual");
+
+    }
+
+    public static void main(String[] args) throws Exception{
+
+        System.out.println(InetAddress.getLocalHost());
+    }
 }

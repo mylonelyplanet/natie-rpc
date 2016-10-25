@@ -1,5 +1,6 @@
 package com.bowen.natie.rpc.basic.registry.zookeeper;
 
+import com.bowen.natie.rpc.basic.entity.ServerInfo;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -70,7 +71,8 @@ public final class RegisterAgent  {
 
 
     public void registService(int port, boolean isSSL) {
-
+        LOGGER.info("register Server Info : {}", port);
+        //ServerInfo info =
     }
 
 
