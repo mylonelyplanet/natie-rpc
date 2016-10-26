@@ -3,6 +3,7 @@ package com.bowen.natie.rpc.basic.entity;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -16,6 +17,7 @@ import java.util.List;
  * POJO that represents a service instance
  * ip：port 作为一个实例的唯一标识
  */
+@JsonRootName("ServerInfo")
 public class ServerInfo {
 
     public static final int DEFAULT_WEIGHT = 100;
@@ -38,10 +40,6 @@ public class ServerInfo {
     //only for de-serialization
     public ServerInfo(){this("", "",  0,0 );}
 
-    public long getRegistrationTimeUTC() {
-        return registrationTimeUTC;
-    }
-
     public String getName() {
         return name;
     }
@@ -54,4 +52,35 @@ public class ServerInfo {
         return port;
     }
 
+    public long getRegistrationTimeUTC() {
+        return registrationTimeUTC;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerInfo{" +
+                "name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", port=" + port +
+                ", registrationTimeUTC=" + registrationTimeUTC +
+                ", label='" + label + '\'' +
+                ", weight=" + weight +
+                '}';
+    }
 }

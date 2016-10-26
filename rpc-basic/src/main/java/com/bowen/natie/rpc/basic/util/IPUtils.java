@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * Created by mylonelyplanet on 16/7/24.
  */
 
-
 public class IPUtils {
     private static Logger logger = LoggerFactory.getLogger(IPUtils.class);
 
@@ -35,8 +34,6 @@ public class IPUtils {
     private static ConcurrentMap<String, InetAddress> inetAddressCache = PlatformDependent.newConcurrentHashMap();
     static {
         try {
-
-
             List<InetAddress> listAdr = getAllLocalIPs();
             if(listAdr != null && listAdr.size() > 0){
                 localInetAddress = listAdr.get(0);
@@ -69,10 +66,6 @@ public class IPUtils {
         return result;
     }
 
-
-
-
-
     public static String localIp4Str() {
         return localHostAddress;
     }
@@ -80,6 +73,10 @@ public class IPUtils {
 
     public static InetAddress localIp() {
         return localInetAddress;
+    }
+
+    public static String getHostName(){
+        return localInetAddress.getHostName();
     }
 
     /**
@@ -253,6 +250,7 @@ public class IPUtils {
 
     public static void main(String[] args) throws Exception{
 
-        System.out.println(InetAddress.getLocalHost());
+        System.out.println(IPUtils.localIp4Str());
+        System.out.println(getHostName());
     }
 }

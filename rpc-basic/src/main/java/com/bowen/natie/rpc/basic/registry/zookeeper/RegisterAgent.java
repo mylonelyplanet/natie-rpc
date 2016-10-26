@@ -1,12 +1,17 @@
 package com.bowen.natie.rpc.basic.registry.zookeeper;
 
 import com.bowen.natie.rpc.basic.entity.ServerInfo;
+import com.bowen.natie.rpc.basic.protocol.JsonInstanceSerializer;
+import com.bowen.natie.rpc.basic.util.IPUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.utils.ZKPaths;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +25,8 @@ public final class RegisterAgent  {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterAgent.class);
 
     public static String ZK_HOST_PORT = "127.0.0.1:2181";
-
+    private static final String basePath = "RPC";
+    private static String appName = "default.domain";
     private static volatile RegisterAgent instance;
     private static AtomicBoolean shutdownFlag = new AtomicBoolean(false);
 
@@ -28,16 +34,22 @@ public final class RegisterAgent  {
     private int sessionTimeout = 10000; //
 
     private CuratorFramework curatorClient;
+    private JsonInstanceSerializer serializer;
 
     static {
-        String result = System.getProperty("registry.address");
-        if(result != null){
-            ZK_HOST_PORT = result;
+        String registry = System.getProperty("registry.address");
+        if(registry != null){
+            ZK_HOST_PORT = registry;
+        }
+        String domain = System.getProperty("app.name");
+        if(domain != null){
+            appName = domain;
         }
     }
 
     private RegisterAgent() throws Exception {
         try {
+            this.serializer = new JsonInstanceSerializer();
             this.curatorClient = getCuratorClient();
             curatorClient.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                 @Override
@@ -70,9 +82,31 @@ public final class RegisterAgent  {
     }
 
 
-    public void registService(int port, boolean isSSL) {
-        LOGGER.info("register Server Info : {}", port);
-        //ServerInfo info =
+    public void registService(int port, boolean isSSL) throws Exception{
+
+        long registrationTimeUTC = System.currentTimeMillis();
+        ServerInfo info = new ServerInfo(IPUtils.getHostName(), IPUtils.localIp4Str(),port,registrationTimeUTC);
+
+        LOGGER.info("register Server Info : {}",info );
+
+        byte[] bytes = serializer.serialize(info);
+        String path = pathForGroup(appName);
+
+        final int MAX_TRIES = 2;
+        boolean isDone = false;
+        for ( int i = 0; !isDone && (i < MAX_TRIES); ++i )
+        {
+            try
+            {
+                CreateMode mode = CreateMode.EPHEMERAL;
+                curatorClient.create().creatingParentsIfNeeded().withMode(mode).forPath(path, bytes);
+                isDone = true;
+            }
+            catch ( KeeperException.NodeExistsException e )
+            {
+                curatorClient.delete().forPath(path);  // must delete then re-create so that watchers fire
+            }
+        }
     }
 
 
@@ -86,8 +120,12 @@ public final class RegisterAgent  {
 
     private static void clearInstance(){
        RegisterAgent.instance = null;
-   }
+    }
 
+    private String pathForGroup(String group)
+    {
+        return ZKPaths.makePath(basePath, group);
+    }
     /*get registerClient*/
     private CuratorFramework getCuratorClient() throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
