@@ -23,6 +23,7 @@ public class ServerInfo {
     public static final int DEFAULT_WEIGHT = 100;
 
     private final String   name;
+    private final String   uniqueID;
     private final String   address;
     private final int  port;
     private final long    registrationTimeUTC;
@@ -35,6 +36,7 @@ public class ServerInfo {
         this.address = Preconditions.checkNotNull(address,"address can't be null");;
         this.port = port;
         this.registrationTimeUTC = registrationTimeUTC;
+        this.uniqueID = address.concat(":").concat(Integer.toString(port));
     }
 
     //only for de-serialization
@@ -70,6 +72,10 @@ public class ServerInfo {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public String getUniqueID() {
+        return uniqueID;
     }
 
     @Override

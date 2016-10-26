@@ -25,7 +25,7 @@ public final class RegisterAgent  {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterAgent.class);
 
     public static String ZK_HOST_PORT = "127.0.0.1:2181";
-    private static final String basePath = "RPC";
+    private static final String basePath = "/registry";
     private static String appName = "default.domain";
     private static volatile RegisterAgent instance;
     private static AtomicBoolean shutdownFlag = new AtomicBoolean(false);
@@ -90,7 +90,7 @@ public final class RegisterAgent  {
         LOGGER.info("register Server Info : {}",info );
 
         byte[] bytes = serializer.serialize(info);
-        String path = pathForGroup(appName);
+        String path = pathForInstance(appName,info.getUniqueID());
 
         final int MAX_TRIES = 2;
         boolean isDone = false;
@@ -122,6 +122,7 @@ public final class RegisterAgent  {
        RegisterAgent.instance = null;
     }
 
+    String pathForInstance(String group, String instance) { return ZKPaths.makePath(pathForGroup(group), instance); }
     private String pathForGroup(String group)
     {
         return ZKPaths.makePath(basePath, group);
