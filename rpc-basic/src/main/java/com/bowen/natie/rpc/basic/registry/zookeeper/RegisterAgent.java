@@ -24,14 +24,16 @@ public final class RegisterAgent  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterAgent.class);
 
+
+
     public static String ZK_HOST_PORT = "127.0.0.1:2181";
     private static final String basePath = "/registry";
     private static String appName = "default.domain";
     private static volatile RegisterAgent instance;
     private static AtomicBoolean shutdownFlag = new AtomicBoolean(false);
 
-    private int connectionTimeout = 10000;//
-    private int sessionTimeout = 10000; //
+    private int connectionTimeout = 10000;
+    private int sessionTimeout = 30000;
 
     private CuratorFramework curatorClient;
     private JsonInstanceSerializer serializer;
@@ -90,7 +92,7 @@ public final class RegisterAgent  {
         LOGGER.info("register Server Info : {}",info );
 
         byte[] bytes = serializer.serialize(info);
-        String path = pathForInstance(appName,info.getUniqueID());
+        String path = pathForInstance(appName, info.getUniqueID());
 
         final int MAX_TRIES = 2;
         boolean isDone = false;
@@ -130,8 +132,9 @@ public final class RegisterAgent  {
     /*get registerClient*/
     private CuratorFramework getCuratorClient() throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-
+        LOGGER.info("ZK: {}",ZK_HOST_PORT);
         CuratorFramework theCuratorClient = CuratorFrameworkFactory.newClient(ZK_HOST_PORT,sessionTimeout,connectionTimeout,retryPolicy);
+        theCuratorClient.start();
         theCuratorClient.getZookeeperClient().blockUntilConnectedOrTimedOut();
         if (!theCuratorClient.getZookeeperClient().isConnected()) {
             throw new Exception("can't connect to zk!");
