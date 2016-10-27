@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by mylonelyplanet on 16/8/23.
- * 连接器,建立客户端到服务端的NETTY连接池
  */
 
 public class Connector {

@@ -31,7 +31,6 @@ public class StartContainer {
     public RpcServer initServer(){
 
         try {
-            // 检测注册中心
             RegisterAgent.getInstance();
             // init the local address to avoid first time timeout
             IPUtils.localIp4Str();

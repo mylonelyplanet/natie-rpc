@@ -90,13 +90,13 @@ public class RpcServer implements ApplicationContextAware{
         }
     }
 
-    /** 检测端口的合法性（即是否在制定范围内） */
+    /* check to find which port is available */
     private static int checkPort(int port) {
         int finalPort = port;
-        // 如果未设置端口，从1080开始查找一可用端口
+        //start from port 1080
         if (finalPort == -1) {
-            int minPort = 1080;// 起始端口
-            int maxPort = 65535;// 最大端口
+            int minPort = 1080;
+            int maxPort = 65535;
             boolean hasAvailablePort = false;
             for (finalPort = minPort; finalPort <= maxPort; finalPort++) {
                 if (!IPUtils.isLocalPortUsing(finalPort)) {
@@ -121,12 +121,7 @@ public class RpcServer implements ApplicationContextAware{
                     "host port error, the port " + port + " in the host " + hostAddress + " is not listening");
         }
     }
-    /**
-     * 注册到ZK上
-     *
-     * @param port 监听的端口
-     * @param isSSL 是否为SSL
-     */
+
     private static void syncServiceInfo(int port, boolean isSSL) throws Exception {
         RegisterAgent.getInstance().registService(port, isSSL);
     }

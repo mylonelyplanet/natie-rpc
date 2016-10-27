@@ -15,7 +15,6 @@ import java.util.List;
 /**
  * Created by mylonelyplanet on 16/7/24.
  * POJO that represents a service instance
- * ip：port 作为一个实例的唯一标识
  */
 @JsonRootName("ServerInfo")
 public class ServerInfo {
@@ -28,8 +27,8 @@ public class ServerInfo {
     private final int  port;
     private final long    registrationTimeUTC;
 
-    private String label;// 服务器标签（用于路由规则设定）
-    private int weight = DEFAULT_WEIGHT; // 权重
+    private String label;//服务器标签，用于路由控制
+    private int weight = DEFAULT_WEIGHT; //权重
 
     public ServerInfo(String name,  String address,int port, long registrationTimeUTC){
         this.name = Preconditions.checkNotNull(name,"name can't be null");
