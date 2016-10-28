@@ -40,7 +40,7 @@ public class RpcHandler extends SimpleChannelInboundHandler<RpcRequest>{
 
     private Object handle(RpcRequest request) throws Throwable {
 
-//        LOGGER.info("RpcServer is handling: {}", request);
+        LOGGER.info("RpcServer is handling: {}", request);
 
         String className = request.getClassName();
         Object serviceBean = handlerMap.get(className);

@@ -18,7 +18,6 @@ public class ApiController {
 
     @RequestMapping("/hello")
     public String hello(){
-        System.out.println("hello");
         return greetingService.sayhello();
     }
 }

@@ -32,7 +32,6 @@ public class StartContainer {
             IPUtils.localIp4Str();
 
             RpcServer rpcServer = new RpcServer();
-            rpcServer.startServer(false);
 
             return rpcServer;
         } catch (Exception e) {

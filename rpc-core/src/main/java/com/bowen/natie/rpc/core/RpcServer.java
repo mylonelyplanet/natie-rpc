@@ -18,6 +18,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * Created by mylonelyplanet on 16/7/10.
  */
-public class RpcServer implements ApplicationContextAware{
+public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
     private Map<String, Object> handlerMap = new HashMap<>();
@@ -36,11 +37,12 @@ public class RpcServer implements ApplicationContextAware{
     public RpcServer(){
     }
 
-    public void startServer(final boolean sslFlag) throws Exception{
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
         //Detect the final port and log it.
         final int finalPort = checkPort(-1);
-        startNetty(finalPort, sslFlag);
+        startNetty(finalPort, false);
     }
 
     @Override
