@@ -3,6 +3,7 @@ package com.bowen.natie.rpc.proxy;
 import com.bowen.natie.rpc.basic.dto.RpcRequest;
 import com.bowen.natie.rpc.basic.dto.EnvRequest;
 import com.bowen.natie.rpc.basic.dto.RpcResponse;
+import com.bowen.natie.rpc.basic.registry.zookeeper.DiscoverAgent;
 import net.sf.cglib.proxy.InvocationHandler;
 import net.sf.cglib.proxy.Proxy;
 
@@ -13,13 +14,13 @@ import java.util.UUID;
  * Created by mylonelyplanet on 16/7/10.
  */
 public class RpcProxy {
-    private String serverAddress;
-    private ServiceDiscovery serviceDiscovery;
 
-    public RpcProxy(String serverAddress){
-        this.serverAddress = serverAddress;
+    private DiscoverAgent serviceDiscovery;
+    private String serverAddress;
+
+    public RpcProxy( DiscoverAgent serviceDiscovery){
+        this.serviceDiscovery = serviceDiscovery;
     }
-    public RpcProxy(ServiceDiscovery serviceDiscovery){ this.serviceDiscovery = serviceDiscovery;}
 
     @SuppressWarnings("unchecked")
     public <T> T create(Class<?> interfaceClass){
@@ -31,12 +32,11 @@ public class RpcProxy {
                         if(serviceDiscovery != null){
                             serverAddress = serviceDiscovery.discover(); // 发现服务
                         }else {
-                            throw new IllegalStateException("no zookeeper");
+                            throw new IllegalStateException("Discover Agent is not working.");
                         }
                         String[] array = serverAddress.split(":");
                         String host = array[0];
                         int port = Integer.parseInt(array[1]);
-
 
                         /*get environment info*/
                         RpcRequest request = new RpcRequest();

@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.proxy;
+package com.bowen.natie.rpc.basic.registry.zookeeper.simpleVersion;
 
 import com.bowen.natie.rpc.basic.constant.Constant;
 import org.apache.zookeeper.KeeperException;
@@ -16,19 +16,26 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by mylonelyplanet on 16/7/10.
+ * only for demo
  */
 
-public class ServiceDiscovery {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceDiscovery.class);
+public class SimpleServiceDiscovery {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleServiceDiscovery.class);
 
     private CountDownLatch latch = new CountDownLatch(1);
 
     private volatile List<String> dataList = new ArrayList<String>();
 
-    private String registryAddress;
+    private static String registryAddress = "127.0.0.1:2181";
 
-    public ServiceDiscovery(String registryAddress){
-        this.registryAddress = registryAddress;
+    static {
+        String registry = System.getProperty("registry.address");
+        if(registry != null){
+            registryAddress = registry;
+        }
+    }
+
+    public SimpleServiceDiscovery(){
 
         ZooKeeper zk = connectServer();
         if(zk != null){

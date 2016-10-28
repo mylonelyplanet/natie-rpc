@@ -3,9 +3,13 @@ package com.bowen.natie.rpc.basic.registry.zookeeper;
 import com.bowen.natie.rpc.basic.entity.ServerInfo;
 import com.bowen.natie.rpc.basic.protocol.JsonInstanceSerializer;
 import com.bowen.natie.rpc.basic.util.IPUtils;
+import com.google.common.collect.Maps;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -15,22 +19,25 @@ import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 /**
  * Created by mylonelyplanet on 16/7/24.
  */
-public final class RegisterAgent  {
+public final class DiscoverAgent {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterAgent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscoverAgent.class);
 
-
+    //local cache for service discover
+    private PathChildrenCache cache = null;
+    private final ConcurrentMap<String, ServerInfo> serverList = Maps.newConcurrentMap();
 
     public static String ZK_HOST_PORT = "127.0.0.1:2181";
     private static final String basePath = "/registry";
     private static String appName = "default.domain";
-    private static volatile RegisterAgent instance;
-    private static AtomicBoolean shutdownFlag = new AtomicBoolean(false);
+    private static volatile DiscoverAgent instance;
 
     private int connectionTimeout = 10000;
     private int sessionTimeout = 30000;
@@ -43,13 +50,9 @@ public final class RegisterAgent  {
         if(registry != null){
             ZK_HOST_PORT = registry;
         }
-        String domain = System.getProperty("app.name");
-        if(domain != null){
-            appName = domain;
-        }
     }
 
-    private RegisterAgent() throws Exception {
+    private DiscoverAgent() throws Exception {
         try {
             this.serializer = new JsonInstanceSerializer();
             this.curatorClient = getCuratorClient();
@@ -65,6 +68,11 @@ public final class RegisterAgent  {
                     }
                 }
             });
+            String path = pathForGroup(appName);
+            this.cache = new PathChildrenCache(curatorClient,path,true);
+            cache.start();
+            addListener(cache);
+
         }catch (Exception e) {
             LOGGER.error("[connect zookeeper server fail]", e);
             throw new Exception(e.toString(), e);
@@ -72,17 +80,38 @@ public final class RegisterAgent  {
     }
 
     /*get singleton*/
-    public static RegisterAgent getInstance() throws Exception {
+    public static DiscoverAgent getInstance() throws Exception {
         if(instance == null){
-            synchronized (RegisterAgent.class){
+            synchronized (DiscoverAgent.class){
                 if(instance == null){
-                    instance = new RegisterAgent();
+                    instance = new DiscoverAgent();
                 }
             }
         }
         return instance;
     }
 
+    public void printServers(){
+        if(serverList.isEmpty()){
+            LOGGER.info("there is no available server on service :)");
+        }else{
+            serverList.keySet().stream().forEach(System.out::print);
+        }
+    }
+
+    /*
+    * add strategy control later
+     */
+    public String discover(){
+        if(serverList.isEmpty()){
+            LOGGER.info("there is no available server on service :)");
+            return null;
+        }else{
+            int size = serverList.size();
+            serverList.keySet().stream().forEach(System.out::print);
+            return (String)serverList.keySet().toArray()[ThreadLocalRandom.current().nextInt(size)];
+        }
+    }
 
     public void registService(int port, boolean isSSL) throws Exception{
 
@@ -111,22 +140,60 @@ public final class RegisterAgent  {
         }
     }
 
-
-    public void shutdown() throws Exception {}
-
-    public static boolean isShutdown() {
-        return shutdownFlag.get();
-    }
-
-    private static void clearInstance(){
-       RegisterAgent.instance = null;
-    }
-
-    String pathForInstance(String group, String instance) { return ZKPaths.makePath(pathForGroup(group), instance); }
-    private String pathForGroup(String group)
+    private void addListener(PathChildrenCache cache)
     {
-        return ZKPaths.makePath(basePath, group);
+
+        PathChildrenCacheListener listener = new PathChildrenCacheListener()
+        {
+            @Override
+            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception
+            {
+                switch ( event.getType() )
+                {
+                    case CHILD_ADDED:
+                    {
+                        ServerInfo config = queryForInstance(event.getData().getPath());
+                        LOGGER.info("Node added: {}", config.getUniqueID() );
+                        serverList.put(config.getUniqueID(), config);
+                        break;
+                    }
+
+                    case CHILD_UPDATED:
+                    {
+                        ServerInfo config = queryForInstance(event.getData().getPath());
+                        LOGGER.info("Node changed: {}", config.getUniqueID());
+                        serverList.replace(config.getUniqueID(), config);
+                        break;
+                    }
+
+                    case CHILD_REMOVED:
+                    {
+                        String node = ZKPaths.getNodeFromPath(event.getData().getPath());
+                        LOGGER.info("Node removed: {}" , node);
+                        serverList.remove(node);
+                        break;
+                    }
+                }
+            }
+        };
+        cache.getListenable().addListener(listener);
     }
+
+    private ServerInfo queryForInstance(String path) throws Exception {
+        try
+        {
+            byte[] bytes = curatorClient.getData().forPath(path);
+            return serializer.deserialize(bytes);
+        }
+        catch ( KeeperException.NoNodeException ignore )
+        {
+            // ignore
+        }
+        return null;
+    }
+
+    private String pathForInstance(String group, String instance) { return ZKPaths.makePath(pathForGroup(group), instance); }
+    private String pathForGroup(String group) { return ZKPaths.makePath(basePath, group);}
 
 
     /*get registerClient*/
@@ -142,4 +209,9 @@ public final class RegisterAgent  {
         return theCuratorClient;
     }
 
+
+    public void shutdown() throws Exception {}
+    private static void clearInstance(){
+        DiscoverAgent.instance = null;
+    }
 }

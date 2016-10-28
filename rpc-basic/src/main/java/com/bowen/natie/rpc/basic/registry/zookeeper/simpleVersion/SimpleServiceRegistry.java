@@ -1,4 +1,4 @@
-package com.bowen.natie.rpc.basic.registry.zookeeper;
+package com.bowen.natie.rpc.basic.registry.zookeeper.simpleVersion;
 
 import com.bowen.natie.rpc.basic.constant.Constant;
 import org.apache.zookeeper.*;
