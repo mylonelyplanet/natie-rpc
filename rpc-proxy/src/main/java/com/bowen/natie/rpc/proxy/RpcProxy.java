@@ -3,7 +3,10 @@ package com.bowen.natie.rpc.proxy;
 import com.bowen.natie.rpc.basic.dto.RpcRequest;
 import com.bowen.natie.rpc.basic.dto.EnvRequest;
 import com.bowen.natie.rpc.basic.dto.RpcResponse;
+import com.bowen.natie.rpc.basic.entity.ServerInfo;
 import com.bowen.natie.rpc.basic.registry.zookeeper.DiscoverAgent;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import net.sf.cglib.proxy.InvocationHandler;
 import net.sf.cglib.proxy.Proxy;
 
@@ -16,7 +19,7 @@ import java.util.UUID;
 public class RpcProxy {
 
     private DiscoverAgent serviceDiscovery;
-    private String serverAddress;
+    private ServerInfo serverInfo;
 
     public RpcProxy( DiscoverAgent serviceDiscovery){
         this.serviceDiscovery = serviceDiscovery;
@@ -30,18 +33,15 @@ public class RpcProxy {
                     public Object invoke(Object o, Method method, Object[] args) throws Throwable {
 
                         if(serviceDiscovery != null){
-                            serverAddress = serviceDiscovery.discover(); // 发现服务
+                            serverInfo = serviceDiscovery.discover(); // 发现服务
                         }else {
                             throw new IllegalStateException("Discover Agent is not working.");
                         }
-                        String[] array = serverAddress.split(":");
-                        String host = array[0];
-                        int port = Integer.parseInt(array[1]);
 
                         /*get environment info*/
                         RpcRequest request = new RpcRequest();
                         EnvRequest env = new EnvRequest();
-                        env.setHost(host);
+                        env.setHost(serverInfo.getAddress());
                         env.setSign(UUID.randomUUID().toString());
                         if(args.length > 0){
                             for(int i =0; i<args.length;i++){
@@ -50,7 +50,6 @@ public class RpcProxy {
                                 }
                             }
                         }
-
                         request.setRequestId(env.getSign());
                         request.setClassName(method.getDeclaringClass().getName());
                         request.setMethodName(method.getName());
@@ -59,8 +58,17 @@ public class RpcProxy {
 
                         //System.out.println("invoke method to host: " + host + " | port: " + port +" | " + request.toString());
 
-                        RpcClient client = new RpcClient(host,port);
-                        RpcResponse response = client.send(request);
+                        Channel channel = null;
+                        channel = ConnectionPool.getClientInstance().getChannelByServerInfo(serverInfo);
+                        if(channel == null){
+                            ServerInfo nextServerInfo = serviceDiscovery.discover();
+                            channel =  ConnectionPool.getClientInstance().getChannelByServerInfo(nextServerInfo);
+                        }
+
+                        //TODO 这里还有问题，这个handler并没有被处理，必须修改
+                        ConnectionPoolClientHandler handler = new ConnectionPoolClientHandler();
+
+                        RpcResponse response = handler.send(channel,request);
                         //System.out.println("invoke finish: " + response);
                         if(response.isError()){
                             throw response.getError();

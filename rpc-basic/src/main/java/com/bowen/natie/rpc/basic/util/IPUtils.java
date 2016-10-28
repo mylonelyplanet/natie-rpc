@@ -1,21 +1,18 @@
 package com.bowen.natie.rpc.basic.util;
 
-import java.net.Inet6Address;
+
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Collection;
+
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
-import com.bowen.natie.rpc.basic.exception.RpcErrorCode;
-import com.bowen.natie.rpc.basic.exception.RpcException;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +28,7 @@ public class IPUtils {
     private static InetAddress localInetAddress;
     private static String localHostAddress = "127.0.0.1";
 
-    private static ConcurrentMap<String, InetAddress> inetAddressCache = PlatformDependent.newConcurrentHashMap();
+    private static ConcurrentMap<String, InetAddress> inetAddressCache = Maps.newConcurrentMap();
     static {
         try {
             List<InetAddress> listAdr = getAllLocalIPs();
@@ -91,21 +88,6 @@ public class IPUtils {
             ipAddr = IPUtils.localIp();
         }
         return ipAddr;
-    }
-
-
-    public static String getHostAddress(SocketAddress socketAddress) {
-        InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
-        return inetSocketAddress.getAddress().getHostAddress() + ':' + inetSocketAddress.getPort();
-    }
-
-    @Deprecated
-    public static String getHostName(SocketAddress socketAddress) {
-        if (socketAddress != null) {
-            return getHostName(socketAddress.toString());
-        }
-
-        return null;
     }
 
     /**
