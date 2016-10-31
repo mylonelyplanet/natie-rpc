@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by mylonelyplanet on 16/8/23.
- * 每个目标服务对应一个channel pool
+ * each target has a channel pool
  */
 public final class ConnectionPool {
 
@@ -28,6 +28,10 @@ public final class ConnectionPool {
         return ConnectionPoolClientHolder.instance;
     }
 
+    public Connector getConnector() {
+        return connector;
+    }
+
     public Channel getChannelByServerInfo(ServerInfo serverInfo) throws Exception {
         ChannelPool channelPool = getChannelPool(serverInfo);
         return channelPool.synGetChannel();
@@ -35,6 +39,7 @@ public final class ConnectionPool {
 
     public static ChannelPool getChannelPool(Channel channel) {
         String uniqueInfo = channel.attr(ChannelPool.UNIQUE_INFO_ATTRIBUTEKEY).get();
+
         ChannelPool pool = getClientInstance().connectionsByServerInfo.get(uniqueInfo);
         if (pool != null) {
             return pool;

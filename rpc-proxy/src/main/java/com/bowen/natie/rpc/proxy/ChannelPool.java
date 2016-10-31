@@ -18,9 +18,9 @@ public class ChannelPool {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelPool.class);
 
-    public static final AttributeKey<String> UNIQUE_INFO_ATTRIBUTEKEY = AttributeKey.valueOf("osp.uniqueInfo");
-    public static final AttributeKey<Integer> INDEX_ATTRIBUTE = AttributeKey.valueOf("osp.channel.indexOfPool");
-    public static final AttributeKey<AtomicInteger> SEQ_ATTRIBUTEKEY = AttributeKey.valueOf("osp.seq");
+    public static final AttributeKey<String> UNIQUE_INFO_ATTRIBUTEKEY = AttributeKey.valueOf("rpc.uniqueInfo");
+    public static final AttributeKey<Integer> INDEX_ATTRIBUTE = AttributeKey.valueOf("rpc.channel.indexOfPool");
+
 
     private static final int MAX_CONNECTIONS = Math.max(2, Runtime.getRuntime().availableProcessors() / 4);
 
@@ -63,9 +63,9 @@ public class ChannelPool {
             String host = serverAddress.getAddress().getHostAddress();
             int port = serverAddress.getPort();
 
-            LOGGER.info("connecting to " + host + ":" + port);
+            //LOGGER.info("connecting to " + host + ":" + port);
             target = connector.syncConnect(host, port);
-            LOGGER.info("connected to " + host + ":" + port);
+            //LOGGER.info("connected to " + host + ":" + port);
 
             target.attr(INDEX_ATTRIBUTE).set(pos);
             //target.attr(HEART_BEAT_FAIL).set(new AtomicInteger(0));
@@ -96,7 +96,4 @@ public class ChannelPool {
         LOGGER.info("closed from " + channel.remoteAddress());
     }
 
-    public static int getNextSequence(Channel channel) {
-        return channel.attr(ChannelPool.SEQ_ATTRIBUTEKEY).get().incrementAndGet();
-    }
 }

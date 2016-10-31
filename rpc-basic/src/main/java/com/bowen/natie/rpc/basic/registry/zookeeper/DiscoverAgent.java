@@ -95,7 +95,7 @@ public final class DiscoverAgent {
         if(serverList.isEmpty()){
             LOGGER.info("there is no available server on service :)");
         }else{
-            serverList.keySet().stream().forEach(System.out::print);
+            serverList.keySet().stream().forEach(System.out::println);
         }
     }
 
@@ -108,7 +108,7 @@ public final class DiscoverAgent {
             return null;
         }else{
             int size = serverList.size();
-            serverList.keySet().stream().forEach(System.out::print);
+            //serverList.keySet().stream().forEach(System.out::println);
             final int pos = ThreadLocalRandom.current().nextInt(0, serverList.size());
             String name = (String)serverList.keySet().toArray()[pos];
             return serverList.get(name);

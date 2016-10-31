@@ -208,9 +208,6 @@ public class IPUtils {
         while (nifs.hasMoreElements())
         {
             NetworkInterface nif = nifs.nextElement();
-            //System.out.println(nif);
-            // We ignore subinterfaces - as not yet needed.
-            //System.out.println(" ");
             Enumeration<InetAddress> adrs = nif.getInetAddresses();
             while ( adrs.hasMoreElements() )
             {

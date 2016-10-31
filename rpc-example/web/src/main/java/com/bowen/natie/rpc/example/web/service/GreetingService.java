@@ -17,10 +17,11 @@ public class GreetingService {
     @Resource(name="rpcProxy")
     private RpcProxy rpcProxy;
 
-    public String sayhello(){
+    public String sayhello(String name){
+        if(name == null) name = "baby";
         Greeting serviceHelper = rpcProxy.create(Greeting.class);
         EnvRequest env = new EnvRequest();
-        return serviceHelper.hello("baby", env);
+        return serviceHelper.hello(name, env);
     }
 }
 

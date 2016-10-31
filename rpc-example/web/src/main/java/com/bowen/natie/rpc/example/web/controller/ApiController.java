@@ -3,7 +3,9 @@ package com.bowen.natie.rpc.example.web.controller;
 
 import com.bowen.natie.rpc.example.web.service.GreetingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -17,7 +19,7 @@ public class ApiController {
     private GreetingService greetingService;
 
     @RequestMapping("/hello")
-    public String hello(){
-        return greetingService.sayhello();
+    public String hello(@RequestParam("name") String name){
+        return greetingService.sayhello(name);
     }
 }

@@ -16,23 +16,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by mylonelyplanet on 16/8/23.
- * 创建一个共享的EventLoopGroup.
+ * a sharable netty EventLoopGroup
  */
 
 public final class Connector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Bootstrap bootstrap = new Bootstrap();
+    private final ConnectionPoolClientHandler handler;
 
     public Connector(){
 
+       this.handler = new ConnectionPoolClientHandler();
         EventLoopGroup workerGroup = new NioEventLoopGroup(20,new DefaultThreadFactory("natie-client-worker",Boolean.TRUE));
         this.bootstrap.group(workerGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel channel) throws Exception {
                 channel.pipeline().addLast(new RpcEncoder(RpcRequest.class)) //encode sending request
                         .addLast(new RpcDecoder(RpcResponse.class)) // decode received response
-                        .addLast(new ConnectionPoolClientHandler()); // TODO
+                        .addLast(handler);
             }
         }).option(ChannelOption.SO_KEEPALIVE, true);
     }
@@ -58,4 +60,7 @@ public final class Connector {
         return channel;
     }
 
+    public ConnectionPoolClientHandler getHandler() {
+        return handler;
+    }
 }

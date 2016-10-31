@@ -56,20 +56,19 @@ public class RpcProxy {
                         request.setParameterTypes(method.getParameterTypes());
                         request.setParameters(args);
 
-                        //System.out.println("invoke method to host: " + host + " | port: " + port +" | " + request.toString());
+                        ConnectionPool pool = ConnectionPool.getClientInstance();
+                        ConnectionPoolClientHandler handler = pool.getConnector().getHandler();
 
                         Channel channel = null;
-                        channel = ConnectionPool.getClientInstance().getChannelByServerInfo(serverInfo);
+                        channel = pool.getChannelByServerInfo(serverInfo);
+
                         if(channel == null){
                             ServerInfo nextServerInfo = serviceDiscovery.discover();
                             channel =  ConnectionPool.getClientInstance().getChannelByServerInfo(nextServerInfo);
                         }
 
-                        //TODO 这里还有问题，这个handler并没有被处理，必须修改
-                        ConnectionPoolClientHandler handler = new ConnectionPoolClientHandler();
-
                         RpcResponse response = handler.send(channel,request);
-                        //System.out.println("invoke finish: " + response);
+
                         if(response.isError()){
                             throw response.getError();
                         }else {

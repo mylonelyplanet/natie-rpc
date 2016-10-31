@@ -2,20 +2,15 @@ package com.bowen.natie.rpc.proxy;
 
 import com.bowen.natie.rpc.basic.dto.RpcRequest;
 import com.bowen.natie.rpc.basic.dto.RpcResponse;
-import com.bowen.natie.rpc.basic.protocol.RpcDecoder;
-import com.bowen.natie.rpc.basic.protocol.RpcEncoder;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by bowen.jin on 2016-10-28.
  */
+@ChannelHandler.Sharable
 public class ConnectionPoolClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionPoolClientHandler.class);
@@ -39,7 +34,7 @@ public class ConnectionPoolClientHandler extends SimpleChannelInboundHandler<Rpc
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        LOGGER.warn("Unexpected exception：" + cause.getMessage());
+        LOGGER.warn("Unexpected exception: " + cause.getMessage());
         Channel channel = ctx.channel();
         ConnectionPool.getChannelPool(channel).forceClose(channel);
     }
