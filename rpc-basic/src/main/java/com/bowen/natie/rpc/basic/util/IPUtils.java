@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,13 @@ public class IPUtils {
         try {
             List<InetAddress> listAdr = getAllLocalIPs();
             if(listAdr != null && listAdr.size() > 0){
-                localInetAddress = listAdr.get(0);
+                for(InetAddress inetAddress : listAdr){
+                    logger.info("get local ipAddress : {}",inetAddress.getHostAddress());
+                    if(checkInet4(inetAddress.getHostAddress())){
+                        logger.info("use this : {}",inetAddress.getHostAddress());
+                        localInetAddress = inetAddress;
+                    }
+                }
             }else {
                 localInetAddress = InetAddress.getLocalHost();
             }
@@ -232,4 +239,11 @@ public class IPUtils {
         System.out.println(IPUtils.localIp4Str());
         System.out.println(getHostName());
     }
+
+    private static boolean checkInet4(String ipAdress){
+        logger.info(ipAdress);
+
+        return ipAdress.matches("^(?:(?:1[0-9][0-9]\\.)|(?:2[0-4][0-9]\\.)|(?:25[0-5]\\.)|(?:[1-9][0-9]\\.)|(?:[0-9]\\.)){3}(?:(?:1[0-9][0-9])|(?:2[0-4][0-9])|(?:25[0-5])|(?:[1-9][0-9])|(?:[0-9]))$");
+    }
+
 }

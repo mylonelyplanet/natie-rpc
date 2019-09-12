@@ -102,13 +102,13 @@ public final class DiscoverAgent {
     /*
     * add strategy control later
      */
-    public ServerInfo discover(){
+    public ServerInfo discover(String serviceName){
         if(serverList.isEmpty()){
             LOGGER.info("there is no available server on service :)");
             return null;
         }else{
             int size = serverList.size();
-            //serverList.keySet().stream().forEach(System.out::println);
+            serverList.keySet().stream().forEach(System.out::println);
             final int pos = ThreadLocalRandom.current().nextInt(0, serverList.size());
             String name = (String)serverList.keySet().toArray()[pos];
             return serverList.get(name);

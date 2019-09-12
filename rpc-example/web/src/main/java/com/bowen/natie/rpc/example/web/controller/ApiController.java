@@ -20,6 +20,7 @@ public class ApiController {
 
     @RequestMapping("/hello")
     public String hello(@RequestParam("name") String name){
+        System.out.println("hello");
         return greetingService.sayhello(name);
     }
 }

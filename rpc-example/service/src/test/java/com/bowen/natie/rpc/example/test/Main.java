@@ -37,7 +37,7 @@ public class Main {
 
         for (int i = 0; i < 10; i++) {
 
-            Greeting serviceHelper = helper.create(Greeting.class);
+            Greeting serviceHelper = helper.create(Greeting.class,"Greeting");
             EnvRequest env = new EnvRequest();
             serviceHelper.hello("baby", env);
 

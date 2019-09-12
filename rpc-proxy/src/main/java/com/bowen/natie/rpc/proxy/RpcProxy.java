@@ -26,14 +26,14 @@ public class RpcProxy {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T create(Class<?> interfaceClass){
+    public <T> T create(Class<?> interfaceClass, String serviceName){
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass},
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object o, Method method, Object[] args) throws Throwable {
 
                         if(serviceDiscovery != null){
-                            serverInfo = serviceDiscovery.discover(); // 发现服务
+                            serverInfo = serviceDiscovery.discover(serviceName); // 发现服务
                         }else {
                             throw new IllegalStateException("Discover Agent is not working.");
                         }
@@ -63,7 +63,7 @@ public class RpcProxy {
                         channel = pool.getChannelByServerInfo(serverInfo);
 
                         if(channel == null){
-                            ServerInfo nextServerInfo = serviceDiscovery.discover();
+                            ServerInfo nextServerInfo = serviceDiscovery.discover(serviceName);
                             channel =  ConnectionPool.getClientInstance().getChannelByServerInfo(nextServerInfo);
                         }
 

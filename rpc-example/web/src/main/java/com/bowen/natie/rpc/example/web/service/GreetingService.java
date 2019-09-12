@@ -19,7 +19,7 @@ public class GreetingService {
 
     public String sayhello(String name){
         if(name == null) name = "baby";
-        Greeting serviceHelper = rpcProxy.create(Greeting.class);
+        Greeting serviceHelper = rpcProxy.create(Greeting.class,"Greeting");
         EnvRequest env = new EnvRequest();
         return serviceHelper.hello(name, env);
     }

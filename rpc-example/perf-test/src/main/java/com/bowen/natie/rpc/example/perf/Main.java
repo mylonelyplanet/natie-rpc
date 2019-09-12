@@ -44,7 +44,7 @@ public class Main {
                 public String call() throws Exception {
 
                     RpcProxy helper = ctx.getBean(RpcProxy.class);
-                    Greeting serviceHelper = helper.create(Greeting.class);
+                    Greeting serviceHelper = helper.create(Greeting.class,"Greeting");
                     EnvRequest env = new EnvRequest();
                     Thread.currentThread().sleep(1000);
                     String result = serviceHelper.hello("baby" + num, env);

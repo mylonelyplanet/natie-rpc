@@ -35,6 +35,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     private Map<String, Object> handlerMap = new HashMap<>();
 
     public RpcServer(){
+
     }
 
 
@@ -127,4 +128,18 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     private static void syncServiceInfo(int port, boolean isSSL) throws Exception {
         RegisterAgent.getInstance().registService(port, isSSL);
     }
+
+    public static void main(String[] args) throws Exception {
+        for (int i = 0; i < 200; i++) {
+            System.out.println(System.nanoTime()%1000);
+
+        }
+        Thread.currentThread().sleep(1000);
+        System.out.println("------------------");
+        for (int i = 0; i < 20; i++) {
+            System.out.println(System.nanoTime()%1000);
+
+        }
+    }
+
 }

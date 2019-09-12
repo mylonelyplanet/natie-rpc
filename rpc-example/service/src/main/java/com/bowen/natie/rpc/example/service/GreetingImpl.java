@@ -15,6 +15,6 @@ public class GreetingImpl implements Greeting {
     public String hello(String name, EnvRequest env) {
 
         StringBuilder sb = new StringBuilder();
-        return sb.append("hello").append(name).append(env.getHost()).toString();
+        return sb.append("hello").append(name).append(" from service ").append(env.getHost()).toString();
     }
 }
