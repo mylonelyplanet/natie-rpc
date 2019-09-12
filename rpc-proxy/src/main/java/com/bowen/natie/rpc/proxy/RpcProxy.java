@@ -41,7 +41,7 @@ public class RpcProxy {
                         /*get environment info*/
                         RpcRequest request = new RpcRequest();
                         EnvRequest env = new EnvRequest();
-                        env.setHost(serverInfo.getAddress());
+                        env.setHost(serverInfo.getAddress()+":"+serverInfo.getPort());
                         env.setSign(UUID.randomUUID().toString());
                         if(args.length > 0){
                             for(int i =0; i<args.length;i++){
